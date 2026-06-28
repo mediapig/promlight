@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PromLight</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d1117;--panel:#161b22;--panel2:#1c2128;
+  --border:#30363d;--text:#e6edf3;--muted:#7d8590;
+  --red:#f85149;--yellow:#d29922;--green:#3fb950;
+  --accent:#7c3aed;--accent2:#a78bfa;
+  --radius:10px;--mono:ui-monospace,Menlo,Consolas,monospace;
+  --shadow:0 1px 3px rgba(0,0,0,.4);
+}
+[data-theme=light]{
+  --bg:#f6f8fa;--panel:#ffffff;--panel2:#f6f8fa;
+  --border:#d0d7de;--text:#1f2328;--muted:#656d76;
+  --red:#cf222e;--yellow:#9a6700;--green:#1a7f37;
+  --accent:#7c3aed;--accent2:#7c3aed;
+  --shadow:0 1px 2px rgba(0,0,0,.08);
+}
+
+html,body{height:100%;background:var(--bg);color:var(--text);font:13px/1.6 -apple-system,'Segoe UI','Microsoft YaHei',system-ui,sans-serif}
+
+/* ── Header ── */
+header{
+  position:sticky;top:0;z-index:10;
+  background:var(--panel);border-bottom:1px solid var(--border);
+  padding:10px 20px;display:flex;align-items:center;gap:12px;
+}
+.brand{font-weight:700;font-size:15px;display:flex;align-items:center;gap:9px;white-space:nowrap}
+.logo{display:flex;flex-direction:column;align-items:center;gap:3px;
+  width:18px;background:#1c1e20;border-radius:5px;padding:4px 0;border:1px solid #333;flex:none}
+.logo i{width:9px;height:9px;border-radius:50%;background:#333;transition:background .35s,box-shadow .35s;flex:none}
+.logo i.red.lit{background:var(--red);box-shadow:0 0 6px var(--red)}
+.logo i.yellow.lit{background:var(--yellow);box-shadow:0 0 6px var(--yellow)}
+.logo i.green.lit{background:var(--green);box-shadow:0 0 6px var(--green)}
+.logo i.blink{animation:blink .9s step-start infinite}
+.pill{font-size:11px;border-radius:999px;padding:2px 9px;border:1px solid var(--border);color:var(--muted);white-space:nowrap}
+.pill.ok{color:var(--green);border-color:var(--green);background:rgba(63,185,80,.08)}
+.pill.err{color:var(--red);border-color:var(--red);background:rgba(248,81,73,.08)}
+.hright{display:flex;align-items:center;gap:8px;margin-left:auto}
+.hright label{font-size:12px;color:var(--muted)}
+.hright input[type=number]{
+  width:68px;background:var(--panel2);border:1px solid var(--border);
+  color:var(--text);border-radius:6px;padding:3px 8px;font-size:12px;font-family:var(--mono);
+}
+.icon-btn{
+  background:var(--panel2);border:1px solid var(--border);color:var(--muted);
+  border-radius:6px;padding:4px 9px;cursor:pointer;font-size:13px;line-height:1;
+  transition:color .15s,border-color .15s;
+}
+.icon-btn:hover{color:var(--text);border-color:var(--accent2)}
+
+/* ── Layout ── */
+main{
+  display:grid;grid-template-columns:minmax(290px,5fr) minmax(340px,7fr);
+  gap:14px;padding:14px 18px;max-width:1440px;margin:0 auto;
+}
+@media(max-width:820px){main{grid-template-columns:1fr}}
+.col{display:flex;flex-direction:column;gap:14px}
+section{
+  background:var(--panel);border:1px solid var(--border);
+  border-radius:var(--radius);padding:13px 15px;box-shadow:var(--shadow);
+}
+h2{
+  font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--muted);margin-bottom:11px;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+}
+
+/* ── Device cards ── */
+.dev-card{
+  background:var(--panel2);border:1px solid var(--border);border-radius:8px;
+  padding:9px 11px;display:flex;align-items:center;gap:10px;
+}
+.devlamp{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  width:20px;background:#1a1c1e;border-radius:5px;padding:4px 0;
+  border:1px solid #2a2c2e;flex:none;
+}
+[data-theme=light] .devlamp{background:#e8eaed;border-color:#d0d3d8}
+[data-theme=light] .devlamp i{background:#c0c4cc}
+.devlamp i{width:9px;height:9px;border-radius:50%;background:#333;transition:background .3s,box-shadow .3s;flex:none}
+.devlamp i.red.lit{background:var(--red);box-shadow:0 0 5px var(--red)}
+.devlamp i.yellow.lit{background:var(--yellow);box-shadow:0 0 5px var(--yellow)}
+.devlamp i.green.lit{background:var(--green);box-shadow:0 0 5px var(--green)}
+.devlamp i.blink{animation:blink .9s step-start infinite}
+@keyframes blink{50%{opacity:.12;box-shadow:none}}
+.dev-info{flex:1;min-width:0}
+.dev-name{font-weight:600;font-size:13px;display:flex;align-items:center;gap:6px}
+.dev-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 4px var(--green);flex:none}
+.dev-meta{color:var(--muted);font-size:11px;margin-top:2px;font-family:var(--mono)}
+.dev-sess{
+  font-size:11px;color:var(--muted);border:1px solid var(--border);
+  border-radius:999px;padding:1px 7px;flex:none;
+}
+.empty{color:var(--muted);font-size:12px;padding:4px 0}
+
+/* ── LED Controls ── */
+.led-table{display:flex;flex-direction:column;gap:6px}
+.led-row{
+  background:var(--panel2);border:1px solid var(--border);border-left-width:3px;
+  border-radius:8px;padding:7px 10px;
+  display:flex;align-items:center;gap:8px;
+}
+.led-row.red{border-left-color:var(--red)}
+.led-row.yellow{border-left-color:var(--yellow)}
+.led-row.green{border-left-color:var(--green)}
+.led-pip{width:10px;height:10px;border-radius:50%;flex:none;opacity:.5;transition:opacity .3s,box-shadow .3s}
+.led-pip.red{background:var(--red)}.led-pip.red.lit{opacity:1;box-shadow:0 0 6px var(--red)}
+.led-pip.yellow{background:var(--yellow)}.led-pip.yellow.lit{opacity:1;box-shadow:0 0 6px var(--yellow)}
+.led-pip.green{background:var(--green)}.led-pip.green.lit{opacity:1;box-shadow:0 0 6px var(--green)}
+.led-lbl{font-weight:600;font-size:12px;width:22px;flex:none;color:var(--muted)}
+.led-btns{display:flex;gap:4px;flex:1}
+.btn{
+  background:var(--panel2);border:1px solid var(--border);color:var(--text);
+  border-radius:6px;padding:3px 10px;cursor:pointer;font-size:12px;
+  transition:border-color .12s,background .12s;
+}
+.btn:hover:not(:disabled){border-color:var(--accent2);background:rgba(124,58,237,.1)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.sm{padding:2px 8px;font-size:11px}
+.btn.primary{
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  border-color:transparent;color:#fff;font-weight:600;
+}
+.btn.primary:hover{filter:brightness(1.1)}
+.btn.ghost{color:var(--muted)}
+.all-row{display:flex;gap:5px;padding-top:5px;flex-wrap:wrap}
+
+/* ── Sliders ── */
+.sliders{display:flex;flex-direction:column;gap:5px;padding-top:10px;border-top:1px solid var(--border);margin-top:10px}
+.sl-row{display:flex;align-items:center;gap:8px}
+.sl-lbl{font-size:11px;color:var(--muted);width:56px;flex:none}
+.sl-row input[type=range]{
+  flex:1;height:18px;cursor:pointer;
+  background:transparent;-webkit-appearance:none;appearance:none;
+}
+.sl-row input[type=range]::-webkit-slider-runnable-track{height:4px;border-radius:2px;background:var(--border)}
+.sl-row input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:13px;height:13px;border-radius:50%;
+  background:var(--accent2);border:2px solid var(--bg);box-shadow:0 0 0 1px var(--accent);
+  margin-top:-4.5px;cursor:pointer;
+}
+.sl-val{font-size:11px;color:var(--muted);width:54px;text-align:right;font-family:var(--mono);flex:none}
+.opts-row{display:flex;align-items:center;gap:10px;padding-top:6px;flex-wrap:wrap}
+.opts-row label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:4px;cursor:pointer}
+.opts-row input[type=checkbox]{accent-color:var(--accent2);cursor:pointer}
+.cmd-hint{font-size:11px;color:var(--muted);font-family:var(--mono);padding-top:5px;min-height:16px}
+
+/* ── Events ── */
+.ev-wrap{height:280px;overflow-y:auto;margin:-2px 0}
+.ev-head{
+  display:flex;gap:6px;font-size:11px;font-weight:600;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.05em;
+  padding:0 0 5px;border-bottom:1px solid var(--border);margin-bottom:4px;
+}
+.ev-row{display:flex;align-items:baseline;gap:6px;font-size:12px;padding:2px 0;border-bottom:1px solid rgba(255,255,255,.03)}
+[data-theme=light] .ev-row{border-bottom-color:rgba(0,0,0,.05)}
+.ev-ts{color:var(--muted);flex:none;width:50px;font-family:var(--mono);font-size:11px}
+.ev-agent{color:var(--accent2);flex:none;width:64px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ev-msg{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ev-dev{color:var(--muted);font-family:var(--mono);font-size:11px;flex:none}
+.ev-fail{color:var(--red);flex:none;font-size:11px}
+.ev-ok{color:var(--green);flex:none;font-size:11px}
+
+/* ── Log ── */
+.log{
+  font-family:var(--mono);font-size:11.5px;line-height:1.55;
+  background:var(--panel2);border:1px solid var(--border);border-radius:7px;
+  padding:7px 9px;overflow-y:auto;white-space:pre-wrap;word-break:break-all;
+}
+.log.sm{height:220px}
+.log.xs{height:100px}
+.log .dim{color:var(--muted)}
+.log .lamp{color:var(--accent2)}
+.log .ok{color:var(--green)}
+.log .err{color:var(--red)}
+
+/* ── Console ── */
+.console-row{display:flex;gap:6px}
+.console-row input{
+  flex:1;background:var(--panel2);border:1px solid var(--border);
+  color:var(--text);border-radius:6px;padding:5px 10px;
+  font-size:12px;font-family:var(--mono);
+}
+.console-row input:focus{outline:none;border-color:var(--accent2)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="logo">
+      <i class="red"  id="l-r"></i>
+      <i class="yellow" id="l-y"></i>
+      <i class="green" id="l-g"></i>
+    </div>
+    PromLight
+    <span class="pill" id="ver-pill" style="display:none"></span>
+  </div>
+  <span class="pill" id="conn-pill">连接中…</span>
+  <div class="hright">
+    <label>端口</label>
+    <input type="number" id="port-input" value="7800">
+    <button class="icon-btn" onclick="reconnect()" title="重新连接">↺</button>
+    <button class="icon-btn" id="btn-theme" onclick="toggleTheme()">☀</button>
+  </div>
+</header>
+
+<main>
+
+  <!-- 左栏 -->
+  <div class="col">
+
+    <!-- 设备 -->
+    <section>
+      <h2>设备 <span class="pill" id="dev-count"></span></h2>
+      <div id="devices"><div class="empty">加载中…</div></div>
+    </section>
+
+    <!-- 灯光控制 -->
+    <section>
+      <h2>灯光控制</h2>
+      <div class="led-table">
+        <div class="led-row red">
+          <div class="led-pip red" id="pip-red"></div>
+          <div class="led-lbl">红</div>
+          <div class="led-btns">
+            <button class="btn" onclick="ledCmd('red','on')">亮</button>
+            <button class="btn" onclick="ledCmd('red','blink')">闪</button>
+            <button class="btn ghost" onclick="ledCmd('red','off')">灭</button>
+          </div>
+        </div>
+        <div class="led-row yellow">
+          <div class="led-pip yellow" id="pip-yellow"></div>
+          <div class="led-lbl">黄</div>
+          <div class="led-btns">
+            <button class="btn" onclick="ledCmd('yellow','on')">亮</button>
+            <button class="btn" onclick="ledCmd('yellow','blink')">闪</button>
+            <button class="btn ghost" onclick="ledCmd('yellow','off')">灭</button>
+          </div>
+        </div>
+        <div class="led-row green">
+          <div class="led-pip green" id="pip-green"></div>
+          <div class="led-lbl">绿</div>
+          <div class="led-btns">
+            <button class="btn" onclick="ledCmd('green','on')">亮</button>
+            <button class="btn" onclick="ledCmd('green','blink')">闪</button>
+            <button class="btn ghost" onclick="ledCmd('green','off')">灭</button>
+          </div>
+        </div>
+      </div>
+      <div class="all-row">
+        <button class="btn sm" onclick="ledCmd('all','on')">全亮</button>
+        <button class="btn sm" onclick="ledCmd('all','blink')">全闪</button>
+        <button class="btn sm ghost" onclick="ledCmd('all','off')">全灭</button>
+      </div>
+
+      <div class="sliders">
+        <div class="sl-row">
+          <span class="sl-lbl">亮度</span>
+          <input type="range" id="sl-bright" min="5" max="100" value="80"
+            oninput="id('val-bright').textContent=this.value+'%'"
+            onchange="writeProp('led.brightness', Math.round(this.value * 2.55))">
+          <span class="sl-val" id="val-bright">80%</span>
+        </div>
+        <div class="sl-row">
+          <span class="sl-lbl">渐变</span>
+          <input type="range" id="sl-fade" min="0" max="3000" step="100" value="300"
+            oninput="id('val-fade').textContent=this.value+'ms';updateHint()">
+          <span class="sl-val" id="val-fade">300ms</span>
+        </div>
+        <div class="sl-row">
+          <span class="sl-lbl">闪频</span>
+          <input type="range" id="sl-freq" min="200" max="5000" step="100" value="1000"
+            oninput="id('val-freq').textContent=this.value+'ms';updateHint()">
+          <span class="sl-val" id="val-freq">1000ms</span>
+        </div>
+      </div>
+      <div class="opts-row">
+        <label><input type="checkbox" id="cb-only" onchange="updateHint()"> --only（仅亮该色）</label>
+      </div>
+      <div class="cmd-hint" id="cmd-hint"></div>
+    </section>
+
+  </div>
+
+  <!-- 右栏 -->
+  <div class="col">
+
+    <!-- 事件流 -->
+    <section>
+      <h2>
+        事件流
+        <label style="font-weight:400;font-size:11px;cursor:pointer">
+          <input type="checkbox" id="cb-scroll" checked> 自动滚动
+        </label>
+      </h2>
+      <div class="ev-head">
+        <span style="width:50px">时间</span>
+        <span style="width:64px">Agent</span>
+        <span style="flex:1">事件</span>
+        <span>设备</span>
+      </div>
+      <div class="ev-wrap" id="ev-list"></div>
+    </section>
+
+    <!-- 系统日志 -->
+    <section>
+      <h2>
+        日志
+        <div style="display:flex;gap:6px">
+          <button class="btn sm" onclick="id('log').innerHTML=''">清空</button>
+        </div>
+      </h2>
+      <div class="log sm" id="log"></div>
+    </section>
+
+    <!-- 命令行 -->
+    <section>
+      <h2>命令行</h2>
+      <div class="console-row">
+        <input id="cmd-in" type="text" placeholder="led green on --fade 500"
+          onkeydown="if(event.key==='Enter')sendRaw()">
+        <button class="btn primary" onclick="sendRaw()">发送</button>
+      </div>
+      <div class="log xs" id="cmd-out" style="margin-top:7px"></div>
+    </section>
+
+  </div>
+</main>
+
+<script>
+const id = s => document.getElementById(s);
+
+// ── 状态 ───────────────────────────────────────────────────────
+let PORT = 7800;
+let es   = null;
+const ledSt = {red: null, yellow: null, green: null}; // null | 'on' | 'blink'
+
+// ── LED 状态 UI ────────────────────────────────────────────────
+function applyCmd(cmd) {
+  const m = cmd.match(/\bled\s+(red|yellow|green|all)\s+(on|off|blink)/);
+  if (!m) return;
+  const [, color, action] = m;
+  const only = cmd.includes('--only');
+  const target = color === 'all' ? ['red','yellow','green'] : [color];
+  if (only || color === 'all') {
+    ['red','yellow','green'].forEach(c => { if (!target.includes(c)) ledSt[c] = null; });
+  }
+  target.forEach(c => { ledSt[c] = action === 'off' ? null : action; });
+  renderLeds();
+}
+
+function renderLeds() {
+  ['red','yellow','green'].forEach(c => {
+    const st  = ledSt[c];
+    const lit = !!st;
+    const blk = st === 'blink';
+    // header logo
+    const li = id('l-' + c[0]);
+    li.className = c + (lit ? ' lit' : '') + (blk ? ' blink' : '');
+    // control panel pip
+    const pip = id('pip-' + c);
+    pip.className = 'led-pip ' + c + (lit ? ' lit' : '');
+    // device lamp bulbs
+    document.querySelectorAll(`.devlamp i.${c}`).forEach(b => {
+      b.className = c + (lit ? ' lit' : '') + (blk ? ' blink' : '');
+    });
+  });
+}
+
+// ── API ────────────────────────────────────────────────────────
+const base = () => `http://localhost:${PORT}`;
+
+async function api(path, body) {
+  const opts = body !== undefined
+    ? {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)}
+    : {};
+  const r = await fetch(base() + path, opts);
+  return r.json();
+}
+
+async function ledCmd(color, action) {
+  const fade  = id('sl-fade').value;
+  const freq  = id('sl-freq').value;
+  const only  = id('cb-only').checked;
+  let cmd = `led ${color} ${action}`;
+  if (only && action !== 'off')  cmd += ' --only';
+  if (action === 'blink')        cmd += ` --freq ${freq}`;
+  if (action !== 'off' && +fade > 0) cmd += ` --fade ${fade}`;
+  await sendCmd(cmd);
+}
+
+async function writeProp(prop, val) {
+  await sendCmd(`write ${prop} ${val}`);
+}
+
+async function sendCmd(cmd) {
+  try {
+    const r = await api('/api/command', {cmd});
+    appendLog((r.ok ? '✓' : '✗') + ' ' + cmd, r.ok ? 'ok' : 'err');
+    return r;
+  } catch(e) {
+    appendLog('✗ ' + cmd + '  (' + e.message + ')', 'err');
+  }
+}
+
+async function sendRaw() {
+  const cmd = id('cmd-in').value.trim();
+  if (!cmd) return;
+  try {
+    const r = await api('/api/command', {cmd});
+    const out = id('cmd-out');
+    out.textContent += `\n$ ${cmd}\n  ${JSON.stringify(r)}`;
+    out.scrollTop = out.scrollHeight;
+  } catch(e) {
+    const out = id('cmd-out');
+    out.textContent += `\n$ ${cmd}\n  ERROR: ${e.message}`;
+    out.scrollTop = out.scrollHeight;
+  }
+  id('cmd-in').value = '';
+}
+
+// ── Status ─────────────────────────────────────────────────────
+async function loadStatus() {
+  try {
+    const s = await api('/api/status');
+    renderDevices(s);
+    id('conn-pill').textContent = '已连接';
+    id('conn-pill').className = 'pill ok';
+    if (s.app_version) {
+      id('ver-pill').textContent = 'v' + s.app_version;
+      id('ver-pill').style.display = '';
+    }
+  } catch {
+    id('conn-pill').textContent = '未连接 :' + PORT;
+    id('conn-pill').className = 'pill err';
+    id('devices').innerHTML = '<div class="empty">无法连接 localhost:' + PORT + '，请确认 daemon 已启动</div>';
+  }
+}
+
+function renderDevices(s) {
+  const el = id('devices');
+  const devs = s.devices || [];
+  id('dev-count').textContent = devs.length;
+  if (!devs.length) { el.innerHTML = '<div class="empty">未找到设备</div>'; return; }
+  el.innerHTML = devs.map(d => `
+    <div class="dev-card">
+      <div class="devlamp">
+        <i class="red"></i>
+        <i class="yellow"></i>
+        <i class="green"></i>
+      </div>
+      <div class="dev-info">
+        <div class="dev-name">
+          <span class="dev-dot"></span>
+          ${d.alias || d.label || d.mac}
+        </div>
+        <div class="dev-meta">${d.product || 'PromLight'}  v${d.version}  ${d.mac}</div>
+      </div>
+      <div class="dev-sess">${d.sessions} 会话</div>
+    </div>
+  `).join('');
+  renderLeds();
+}
+
+// ── SSE ────────────────────────────────────────────────────────
+function connectSSE() {
+  if (es) { es.close(); es = null; }
+  try {
+    es = new EventSource(base() + '/api/events');
+    es.onmessage = e => { try { handle(JSON.parse(e.data)); } catch {} };
+    es.onerror   = () => {
+      id('conn-pill').textContent = '断开';
+      id('conn-pill').className = 'pill err';
+      es.close(); es = null;
+      setTimeout(connectSSE, 4000);
+    };
+  } catch {}
+}
+
+function handle(d) {
+  if (d.kind === 'log') {
+    appendLog(d.text, 'dim');
+  } else if (d.kind === 'lamp') {
+    try {
+      const p = JSON.parse(d.text);
+      applyCmd(p.cmd || '');
+      appendLog(`→ [${(p.mac||'').slice(-4)}] ${p.cmd}`, 'lamp');
+    } catch {}
+  } else if (d.kind === 'event') {
+    try { appendEvent(JSON.parse(d.text)); } catch {}
+  }
+}
+
+function appendLog(text, cls) {
+  const el = id('log');
+  const row = document.createElement('div');
+  if (cls) row.className = cls;
+  row.textContent = text;
+  el.appendChild(row);
+  while (el.children.length > 500) el.removeChild(el.firstChild);
+  if (id('cb-scroll').checked) el.scrollTop = el.scrollHeight;
+}
+
+function appendEvent(p) {
+  const el    = id('ev-list');
+  const row   = document.createElement('div');
+  row.className = 'ev-row';
+  const msg = String(p.message || '').replace(/\s{2,}/g, ' ');
+  const ok  = p.ok !== false;
+  row.innerHTML =
+    `<span class="ev-ts">${p.ts||''}</span>` +
+    `<span class="ev-agent">${p.agent||''}</span>` +
+    `<span class="ev-msg">${esc(msg)}</span>` +
+    (ok ? '' : `<span class="ev-fail">✗</span>`) +
+    `<span class="ev-dev">${p.device ? '@'+p.device : ''}</span>`;
+  el.appendChild(row);
+  while (el.children.length > 400) el.removeChild(el.firstChild);
+  if (id('cb-scroll').checked) el.scrollTop = el.scrollHeight;
+}
+
+const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+// ── Hint ───────────────────────────────────────────────────────
+function updateHint() {
+  const fade = +id('sl-fade').value;
+  const freq = +id('sl-freq').value;
+  const only = id('cb-only').checked;
+  const parts = [`led <color> on${only?' --only':''}`];
+  if (fade > 0) parts[0] += ` --fade ${fade}`;
+  parts.push(`led <color> blink${only?' --only':''} --freq ${freq}${fade > 0 ? ' --fade '+fade : ''}`);
+  id('cmd-hint').textContent = parts.join('  /  ');
+}
+
+// ── Theme ──────────────────────────────────────────────────────
+function toggleTheme() {
+  const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+  document.documentElement.dataset.theme = next;
+  id('btn-theme').textContent = next === 'dark' ? '☀' : '🌙';
+  localStorage.setItem('pl-theme', next);
+}
+
+function reconnect() {
+  PORT = parseInt(id('port-input').value) || 7800;
+  loadStatus();
+  connectSSE();
+}
+
+// ── Boot ───────────────────────────────────────────────────────
+const saved = localStorage.getItem('pl-theme');
+if (saved) document.documentElement.dataset.theme = saved;
+id('btn-theme').textContent = document.documentElement.dataset.theme === 'dark' ? '☀' : '🌙';
+
+updateHint();
+loadStatus();
+connectSSE();
+setInterval(loadStatus, 12000);
+</script>
+</body>
+</html>
